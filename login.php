@@ -1,82 +1,16 @@
 <?php
-   ob_start();
    session_start();
 ?>
 
-<?
-   // error_reporting(E_ALL);
-   // ini_set("display_errors", 1);
-?>
-
-<html lang = "en">
+<html>
    
    <head>
-      <title>Tutorialspoint.com</title>
-      <link href = "css/bootstrap.min.css" rel = "stylesheet">
-      
-      <style>
-         body {
-            padding-top: 40px;
-            padding-bottom: 40px;
-            //background-color: #ADABAB;
-         }
-         
-         .form-signin {
-            max-width: 330px;
-            padding: 15px;
-            margin: 0 auto;
-            color: #017572;
-         }
-         
-         .form-signin .form-signin-heading,
-         .form-signin .checkbox {
-            margin-bottom: 10px;
-         }
-         
-         .form-signin .checkbox {
-            font-weight: normal;
-         }
-         
-         .form-signin .form-control {
-            position: relative;
-            height: auto;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-            padding: 10px;
-            font-size: 16px;
-         }
-         
-         .form-signin .form-control:focus {
-            z-index: 2;
-         }
-         
-         .form-signin input[type="email"] {
-            margin-bottom: -1px;
-            border-bottom-right-radius: 0;
-            border-bottom-left-radius: 0;
-            //border-color:#017572;
-         }
-         
-         .form-signin input[type="password"] {
-            margin-bottom: 10px;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-            //border-color:#017572;
-         }
-         
-         h2{
-            text-align: center;
-            color: #017572;
-         }
-      </style>
-      
+      <title>IrishTrade</title>
    </head>
 	
    <body>
-      
-      <h2>Enter Username and Password</h2> 
-      <div class = "container form-signin">
+      <a href="index.php">Home</a>
+      <h3>Enter Username and Password</h3> 
          
          <?php
             $msg = '';
@@ -90,51 +24,37 @@
                $pw = $_POST['password'];
                $email = $_POST['username'];
 
-               $query = "select user_id from users where password = '$pw' and email = '$email' ";
+               $query = "select user_id, phoneNumber, fname, lname from users where password = '$pw' and email = '$email' ";
                $conn = oci_connect("guest", "guest", "xe");
                $stmt = oci_parse($conn, $query);
                oci_execute($stmt);
-    
-               oci_define_by_name($stmt, "USER_ID" , $user_ID);
+               if( $user = oci_fetch_assoc($stmt) ){
 
-               if( oci_fetch($stmt)  ){
-
-				
-             //  if ($_POST['username'] == 'guest' && 
-             //     $_POST['password'] == 'login') {
                   $_SESSION['valid'] = true;
-                  $_SESSION['timeout'] = time();
-                  $_SESSION['user_ID'] = $user_ID;
+                  $_SESSION['user_id'] = $user['USER_ID'];
                   $_SESSION['email'] = $email;
-                
+                  $_SESSION['fname'] = $user['FNAME'];
+                  $_SESSION['lname'] = $user['LNAME'];
+                  $_SESSION['name'] = $user['FNAME']." ".$user['LNAME'];
 
-                  echo 'You have entered valid use name and password';
+                  echo 'You have entered valid user name and password';
+                  echo '<a href="index.html">Home</a><br>';
+                  header('Location: index.php');
                }else {
                   $msg = 'Wrong username or password';
                }
             }
          ?>
-      </div> <!-- /container -->
-      
-      <div class = "container">
-      
-         <form class = "form-signin" role = "form" 
-            action = "<?php echo htmlspecialchars($_SERVER['PHP_SELF']); 
-            ?>" method = "post">
+         <p>Guest account for testing purposes:<br>username: guest@nd.edu<br>password: guest</p>
+         <form role = "form" action = "<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method = "post">
             <h4 class = "form-signin-heading"><?php echo $msg; ?></h4>
-            <input type = "text" class = "form-control" 
-               name = "username" placeholder = "email" 
+            <input type = "text" name = "username" placeholder = "email" 
                required autofocus></br>
-            <input type = "password" class = "form-control"
-               name = "password" placeholder = "password" required>
-            <button class = "btn btn-lg btn-primary btn-block" type = "submit" 
-               name = "login">Login</button>
+            <input type = "password" name = "password" placeholder = "password" required>
+            <button type = "submit" name = "login">Login</button>
          </form>
 			
          <a href = "logout.php" tite = "Logout"> Click here to clean the session or logout of session.
-         
-      </div> 
-      
    </body>
 </html>
 

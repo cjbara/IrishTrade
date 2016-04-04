@@ -6,10 +6,17 @@
   <title>IrishTrade</title>
 </head>
 <body>
-<a href="login.php">Login</a>
-<a href="newuser.php">Sign Up</a>
-<a href="new_post.php">Create New Posting</a>
 <?php
+  if( empty($_SESSION['user_id']) ) {
+    //The user is not logged in
+    print "<a href=\"login.php\">Login</a> ";
+    print "<a href=\"new_user.php\">Sign Up</a>";
+  } else {
+    print "<p>You are logged in as ".$_SESSION['name']."</p>";
+    print "<a href=\"logout.php\">Logout</a> ";
+    print "<a href=\"new_post.php\">Create New Posting</a>";
+  }
+
   $conn = oci_connect("guest", "guest", "xe");
   $query = "select a.post_id, fname ||' '|| lname name, title, description, price, numComments, timestamp, category, orbestoffer best, location, free
 from (

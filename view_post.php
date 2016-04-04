@@ -1,3 +1,7 @@
+<?php
+  session_start();
+  echo $_SESSION['user_id'];
+?>
 <html>
 <head>
   <title>IrishTrade</title>
