@@ -7,7 +7,7 @@
 </head>
 <body>
 <?php
-  if( empty($_SESSION['user_id']) ) {
+  if( empty($_SESSION['valid']) ) {
     //The user is not logged in
     print "<a href=\"login.php\">Login</a> ";
     print "<a href=\"new_user.php\">Sign Up</a>";

@@ -38,7 +38,6 @@
                   $_SESSION['name'] = $user['FNAME']." ".$user['LNAME'];
 
                   echo 'You have entered valid user name and password';
-                  echo '<a href="index.html">Home</a><br>';
                   header('Location: index.php');
                }else {
                   $msg = 'Wrong username or password';
@@ -54,7 +53,6 @@
             <button type = "submit" name = "login">Login</button>
          </form>
 			
-         <a href = "logout.php" tite = "Logout"> Click here to clean the session or logout of session.
    </body>
 </html>
 

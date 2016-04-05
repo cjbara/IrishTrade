@@ -1,3 +1,6 @@
+<?php
+   session_start();
+?>
 <html>
    
    <head>
@@ -7,7 +10,17 @@
    </head>
    
    <body> 
-      <?php
+<?php
+  if( $_SESSION['valid'] == false ) {
+    //The user is not logged in
+    print "<a href=\"login.php\">Login</a> ";
+    print "<a href=\"new_user.php\">Sign Up</a>";
+  } else {
+    print "<p>You are logged in as ".$_SESSION['name']."</p>";
+    print "<a href=\"logout.php\">Logout</a> ";
+    print "<a href=\"index.php\">Home</a> ";
+  }         
+
          // define variables and set to empty values
          $priceErr = $titleErr = $descErr = $categoryErr = $locationErr = "";
          $price = $title = $desc = $category_id = $location = $best = $free = "";
@@ -15,9 +28,10 @@
          if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $errorCount = 0;
-            $user_id = 1;
+            $user_id = $_SESSION['user_id'];
 
             if (empty($_POST["price"])) {
+               $price = 0;
                $free = 1;
             }else {
                $price = test_input($_POST["price"]);
@@ -57,14 +71,15 @@
             }else {
                $location = test_input($_POST["location"]);
             }
+            $sold = 0;
             
             if( $errorCount == 0 ){
-              $query = "insert into posts (user_id, price, free, title, description, category_id, location, orbestoffer) values ($user_id, $price, $free, '$title', '$desc', $category_id, '$location', $best) returning post_id into :post_id";
+              $query = "insert into posts (user_id, price, free, title, description, category_id, location, orbestoffer, sold) values ($user_id, $price, $free, '$title', '$desc', $category_id, '$location', $best, $sold) returning post_id into :post_id";
               $conn = oci_connect("guest", "guest", "xe");
               $stmt = oci_parse($conn, $query);
               oci_bind_by_name($stmt, ":POST_ID", $post_id);
               oci_execute($stmt);
-              header("Location: http://52.33.64.5:8161/view_post.php?post_id=$post_id");
+              header("Location: view_post.php?post_id=$post_id");
             }
          }
 
@@ -129,6 +144,7 @@
                        }
                      ?>
                   </select>
+                  <span><a href="new_category.php">Add a new category</a></span>
                   <span class = "error">* <?php echo $categoryErr;?></span>
                </td>
             </tr>

@@ -1,14 +1,21 @@
 <?php
   session_start();
-  echo $_SESSION['user_id'];
 ?>
 <html>
 <head>
   <title>IrishTrade</title>
 </head>
 <body>
-<a href = "index.php">Home</a>
 <?php
+  if( empty($_SESSION['valid']) ) {
+    //The user is not logged in
+    print "<a href=\"login.php\">Login</a> ";
+    print "<a href=\"new_user.php\">Sign Up</a>";
+  } else {
+    print "<p>You are logged in as ".$_SESSION['name']."</p>";
+    print "<a href=\"logout.php\">Logout</a> ";
+    print "<a href=\"index.php\">Home</a>";
+  }
   $conn = oci_connect("guest", "guest", "xe");
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $errorCount = 0;
@@ -79,8 +86,8 @@ order by comment_time";
   oci_free_statement($post);
   oci_close($conn);
 
-?>
-      <form method = "POST" action = "<?php echo htmlspecialchars($_SERVER["PHP_SELF"])."?post_id=".$_GET['post_id'];?>">
+  if( $_SESSION['valid'] == true ) {
+      print '<form method = "POST" action = "'.htmlspecialchars($_SERVER['PHP_SELF']).'?post_id='.$_GET['post_id'].'">
          <table>
             <tr>
                <td>Comment:</td>
@@ -94,15 +101,16 @@ order by comment_time";
                </td>
             </tr>
 
-            <input type="hidden" name="post_id" value=<?php $_GET['post_id'] ?>>
+            <input type="hidden" name="post_id" value='.$_GET['post_id'].'>
             <tr>
                <td>
                   <input type = "submit" name = "submit" value = "Comment">
                </td>
             </tr>
          </table>
-      </form>
-
+      </form>';
+  }
+  ?>
 </body>
 </html>
     

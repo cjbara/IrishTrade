@@ -8,6 +8,7 @@
    
    <body> 
       <?php
+         print "<a href=\"index.php\">Home</a> ";
          // define variables and set to empty values
          $fnameErr =$unameErr = $lnameErr = $emailErr = $pwErr = $phoneErr = $websiteErr = "";
          $fname = $lname = $uname = $phone = $email = $pw = "";
@@ -117,13 +118,6 @@
       </form>
       
       <?php
-         echo "<h2>Your responses are:</h2>";
-         echo ("<p>Your first name is $fname</p>");
-         echo ("<p>Your last name is $lname</p>");
-         echo ("<p> your email address is $email</p>");
-         echo ("<p> your phone number is $phone</p>");
-         echo ("<p> your password is $pw</p>");
-         
       if($errorCount == 0){
         $insert = "insert into users (email, password, fname, lname, phonenumber) values ('$email', '$pw', '$fname', '$lname', '$phone')";
 //        echo ("$insert");
