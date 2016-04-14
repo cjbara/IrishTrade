@@ -86,7 +86,7 @@ order by comment_time";
   oci_free_statement($post);
   oci_close($conn);
 
-  if( $_SESSION['valid'] == true ) {
+  if( !empty($_SESSION['valid']) ) {
       print '<form method = "POST" action = "'.htmlspecialchars($_SERVER['PHP_SELF']).'?post_id='.$_GET['post_id'].'">
          <table>
             <tr>

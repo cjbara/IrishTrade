@@ -38,7 +38,7 @@
         }
       }
       if( $error == "" ){
-        $query = "insert into categories (category) values ('$newCategory')";
+        $query = "insert into categories (category, created_by) values ('$newCategory', ".$_SESSION['user_id'].")";
         $stmt = oci_parse($conn, $query);
         oci_execute($stmt);
       }
