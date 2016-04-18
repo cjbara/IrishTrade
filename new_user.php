@@ -1,3 +1,6 @@
+<?php
+   session_start();
+?>
 <html>
    
    <head>
@@ -119,14 +122,25 @@
       
       <?php
       if($errorCount == 0){
-        $insert = "insert into users (email, password, fname, lname, phonenumber) values ('$email', '$pw', '$fname', '$lname', '$phone')";
-//        echo ("$insert");
-
+        $insert = "begin user_pack.new_user(:id, :email, :pw, :first, :last, :phone); end;";
         $conn = oci_connect("guest", "guest", "xe");
         $stmt = oci_parse($conn, $insert);
+        oci_bind_by_name($stmt, ":id", $user_id);
+        oci_bind_by_name($stmt, ":email", $email);
+        oci_bind_by_name($stmt, ":pw", $pw);
+        oci_bind_by_name($stmt, ":first", $fname);
+        oci_bind_by_name($stmt, ":last", $lname);
+        oci_bind_by_name($stmt, ":phone", $phone);
         oci_execute($stmt);
 
+        $_SESSION['valid'] = true;
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['email'] = $email;
+        $_SESSION['fname'] = $fname;
+        $_SESSION['lname'] = $lname;
+        $_SESSION['name'] = $fname." ".$lname;
 
+        header("Location: index.php");
        }
       ?>
       

@@ -18,21 +18,14 @@
   }
 
   $conn = oci_connect("guest", "guest", "xe");
-  $query = "select a.post_id, fname ||' '|| lname name, title, description, price, numComments, timestamp, category, orbestoffer best, location, free
-from (
-  select p.post_id, count(comment_id) numComments
-  from posts p left outer join comments c
-  on p.post_id = c.post_id
-  group by p.post_id
-) a, posts p, users u, categories
-where p.user_id = u.user_id
-and a.post_id = p.post_id
-and p.category_id = categories.category_id
-order by timestamp";
+  $curs = oci_new_cursor($conn);
+  $query = "begin post_pack.get_all_posts(:posts_cursor); end;";
   $stmt = oci_parse($conn, $query);
+  oci_bind_by_name($stmt, ":posts_cursor", $curs, -1, OCI_B_CURSOR);
   oci_execute($stmt);
   
-  while( $row = oci_fetch_assoc($stmt) ) {
+  oci_execute($curs);
+  while(($row = oci_fetch_array($curs, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
     
     print "<a href=\"view_post.php?post_id=".$row['POST_ID']."\">";
     print "<p><b>".$row['NAME']."</b> ".$row['TITLE']."</a> ";

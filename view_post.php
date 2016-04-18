@@ -17,6 +17,8 @@
     print "<a href=\"index.php\">Home</a>";
   }
   $conn = oci_connect("guest", "guest", "xe");
+
+  //If the user just posted a new comment
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $errorCount = 0;
     $post_id = $_GET['post_id'];
@@ -34,23 +36,27 @@
     } 
 
     if( $errorCount == 0 ){
-      $query = "insert into comments (user_id, post_id, text, anonymousornah) values ($user_id, $post_id, '$comment', $anon)";
+      $query = "begin comment_pack.new_comment(:id, :user, :post, :text, :anon); end;";
       $stmt = oci_parse($conn, $query);
+      oci_bind_by_name($stmt, ":id", $comment_id);
+      oci_bind_by_name($stmt, ":user", $user_id);
+      oci_bind_by_name($stmt, ":post", $post_id);
+      oci_bind_by_name($stmt, ":text", $comment);
+      oci_bind_by_name($stmt, ":anon", $anon);
       oci_execute($stmt);
     }
   }
 
-  $post_query = "select post_id, fname ||' '|| lname name, title, description, price,
-timestamp post_time, category, orbestoffer best, location, free
-from posts p, users u, categories
-where p.user_id = u.user_id
-and p.category_id = categories.category_id
-and post_id = ".$_GET['post_id']."
-order by post_time";
+  //always diplay the post information
+  $post_query = "begin post_pack.get_post_info(:post_id, :post_info); end;";
   $post = oci_parse($conn, $post_query);
+  $post_cursor = oci_new_cursor($conn);
+  oci_bind_by_name($post, ":post_id", $_GET['post_id']);
+  oci_bind_by_name($post, ":post_info", $post_cursor, -1, OCI_B_CURSOR);
   oci_execute($post);
+  oci_execute($post_cursor);
 
-  while( $row = oci_fetch_assoc($post) ) {
+  while( $row = oci_fetch_array($post_cursor) ) {
     print "<p><b>".$row['NAME']."</b> ".$row['TITLE'];
     if($row['FREE']) {
       print "FREE";
@@ -64,15 +70,18 @@ order by post_time";
     print $row['DESCRIPTION']."<br>";
     print "Category: ".$row['CATEGORY']."<br>";
     print "Location: ".$row['LOCATION']."</p>";
-    $comment_query = "select u.fname || ' ' || u.lname name, c.text, timestamp comment_time, anonymousornah a
-from comments c, users u
-where c.post_id = ".$row['POST_ID']."
-and c.user_id = u.user_id
-order by comment_time";
+
+    //Display all comments for the post
+    $comment_query = "begin comment_pack.comments_for_post(:post_id, :comment_info); end;";
     $comments = oci_parse($conn, $comment_query);
+    $comment_cursor = oci_new_cursor($conn);
+    oci_bind_by_name($comments, ":post_id", $_GET['post_id']);
+    oci_bind_by_name($comments, ":comment_info", $comment_cursor, -1, OCI_B_CURSOR);
     oci_execute($comments);
+    oci_execute($comment_cursor);
+
     print "<p><b>Comments</b></p>";
-    while( $comment = oci_fetch_assoc($comments) ) {
+    while( $comment = oci_fetch_array($comment_cursor) ) {
       print "<p><b>";
       if( $comment['A'] ) {
         print "Anonymous";

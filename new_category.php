@@ -38,9 +38,13 @@
         }
       }
       if( $error == "" ){
-        $query = "insert into categories (category, created_by) values ('$newCategory', ".$_SESSION['user_id'].")";
+        $query = "begin category_pack.new_category(:id, :category, :user); end;";
         $stmt = oci_parse($conn, $query);
+        oci_bind_by_name($stmt, ":id", $category_id);
+        oci_bind_by_name($stmt, ":category", $newCategory);
+        oci_bind_by_name($stmt, ":user", $_SESSION['user_id']);
         oci_execute($stmt);
+        header("Location: new_post.php");
       }
     }
 

@@ -74,12 +74,33 @@
             $sold = 0;
             
             if( $errorCount == 0 ){
-              $query = "insert into posts (user_id, price, free, title, description, category_id, location, orbestoffer, sold) values ($user_id, $price, $free, '$title', '$desc', $category_id, '$location', $best, $sold) returning post_id into :post_id";
               $conn = oci_connect("guest", "guest", "xe");
+              $query = "begin post_pack.new_post(:id, :user, :price, :obo, :title, :desc, :category, :location); end;";
               $stmt = oci_parse($conn, $query);
-              oci_bind_by_name($stmt, ":POST_ID", $post_id);
+              oci_bind_by_name($stmt, ":id", $post_id);
+              oci_bind_by_name($stmt, ":user", $user_id);
+              oci_bind_by_name($stmt, ":price", $price);
+              oci_bind_by_name($stmt, ":obo", $best);
+              oci_bind_by_name($stmt, ":title", $title);
+              oci_bind_by_name($stmt, ":desc", $desc);
+              oci_bind_by_name($stmt, ":category", $category_id);
+              oci_bind_by_name($stmt, ":location", $location);
               oci_execute($stmt);
-              header("Location: view_post.php?post_id=$post_id");
+            /*  if (isset($_FILES['image'])) {
+                $lob = oci_new_descriptor($conn, OCI_D_LOB);
+                $stmt = oci_parse($conn, 'insert into images (post_id, image) '
+                       .'values (3, EMPTY_BLOB()) returning image into :IMAGE');
+                oci_bind_by_name($stmt, ':IMAGE', $lob, -1, OCI_B_BLOB);
+                oci_execute($stmt, OCI_DEFAULT);
+                if ($lob->savefile($_FILES['image']['tmp_name'])) {
+                  oci_commit($conn);
+                }
+                else {
+                  echo "Couldn't upload Blob\n";
+                }
+                $lob->free();
+              }*/
+              //header("Location: view_post.php?post_id=$post_id");
             }
          }
 
@@ -147,6 +168,10 @@
                   <span><a href="new_category.php">Add a new category</a></span>
                   <span class = "error">* <?php echo $categoryErr;?></span>
                </td>
+            </tr>
+            <tr>
+               <td>Image:</td>
+               <td><input type = "file" name = "image"></td>
             </tr>
             
             <tr>

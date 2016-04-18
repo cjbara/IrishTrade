@@ -24,22 +24,34 @@
                $pw = $_POST['password'];
                $email = $_POST['username'];
 
-               $query = "select user_id, phoneNumber, fname, lname from users where password = '$pw' and email = '$email' ";
+               $query = "begin user_pack.check_login(:id, :email, :pw); end; ";
                $conn = oci_connect("guest", "guest", "xe");
+               $info = oci_new_cursor($conn);
                $stmt = oci_parse($conn, $query);
+               oci_bind_by_name($stmt, ':id', $user_id);
+               oci_bind_by_name($stmt, ':email', $email);
+               oci_bind_by_name($stmt, ':pw', $pw);
                oci_execute($stmt);
-               if( $user = oci_fetch_assoc($stmt) ){
-
+               if( $user_id >= 0 ) {
+                 $query = "begin user_pack.get_user_info(:id, :info_cursor); end;";
+                 $stmt = oci_parse($conn, $query);
+                 oci_bind_by_name($stmt, ":info_cursor", $info, -1, OCI_B_CURSOR); 
+                 oci_bind_by_name($stmt, ":id", $user_id); 
+                 oci_execute($stmt);
+                 oci_execute($info);
+               
+                 if( $row = oci_fetch_array($info) ) {
                   $_SESSION['valid'] = true;
-                  $_SESSION['user_id'] = $user['USER_ID'];
-                  $_SESSION['email'] = $email;
-                  $_SESSION['fname'] = $user['FNAME'];
-                  $_SESSION['lname'] = $user['LNAME'];
-                  $_SESSION['name'] = $user['FNAME']." ".$user['LNAME'];
+                  $_SESSION['user_id'] = $row['USER_ID'];
+                  $_SESSION['email'] = $row['EMAIL'];
+                  $_SESSION['fname'] = $row['FNAME'];
+                  $_SESSION['lname'] = $row['LNAME'];
+                  $_SESSION['name'] = $row['FNAME']." ".$row['LNAME'];
 
                   echo 'You have entered valid user name and password';
                   header('Location: index.php');
-               }else {
+                 }
+               } else {
                   $msg = 'Wrong username or password';
                }
             }
