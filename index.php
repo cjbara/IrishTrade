@@ -16,21 +16,17 @@
     $q = $_GET['query'];
   }
   if(!$cat && !$q){
-    echo "neither";
     $query = "begin post_pack.get_all_posts(:posts_cursor); end;";
     $stmt = oci_parse($conn, $query);
   } else if (!$cat){
-    echo "q";
     $query = "begin post_pack.get_all_posts_query(:posts_cursor, :q); end;";
     $stmt = oci_parse($conn, $query);
     oci_bind_by_name($stmt, ":q", $_GET['query']);
   } else if (!$q){
-    echo "cat".$cat;
     $query = "begin post_pack.get_all_posts_category(:posts_cursor, :cat); end;";
     $stmt = oci_parse($conn, $query);
     oci_bind_by_name($stmt, ":cat", $cat);
   } else {
-    echo "both";
     $query = "begin post_pack.get_all_posts_query_category(:posts_cursor, :q, :cat); end;";
     $stmt = oci_parse($conn, $query);
     oci_bind_by_name($stmt, ":q", $_GET['query']);

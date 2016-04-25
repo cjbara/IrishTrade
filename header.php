@@ -14,12 +14,8 @@
   <script>
     $(document).ready(function() {
       $('.modal-trigger').leanModal();
-    });
-
-    $(document).ready(function() {
       $('select').material_select();
     });
-
   </script>
 </head>
 <body>
@@ -32,19 +28,19 @@
   if( empty($_SESSION['valid']) ) {
     //The user is not logged in
 ?>
-	<li><a href="#login-modal" class="modal-trigger" data-target="#login-modal">Login</a></li>
-	<li><a href="#sign-up-modal" class="modal-trigger" data-target="#sign-up-modal">Sign Up</a></li>
+	<li><a href="#login-modal" class="modal-trigger">Login</a></li>
+	<li><a href="#sign-up-modal" class="modal-trigger">Sign Up</a></li>
 <?php
   } else {
 ?>
 
-    <li><a href="update_user.php">Welcome, <?php echo $_SESSION['email'];?></a></li>
+    <li><a href="update_user.php">Welcome, <?php echo $_SESSION['name'];?></a></li>
 
     <li><a href="#search-modal" class="modal-trigger"> <i class="material-icons">search</i></a></li>
 
     <li><a href="#new-post-modal" class="modal-trigger" data-target="#new-post-modal">Create New Post</a></li>
 
-    <li><a href="users_posts.php">View your posts</a></li>
+    <li><a href="user_posts.php">View your posts</a></li>
 
     <li><a href="#messages-modal" class="modal-trigger">Messages</a>
     <li><a href="logout.php">Logout</a></li>
@@ -78,7 +74,7 @@
          oci_define_by_name($stmt, "CATEGORY", $c);
          oci_execute($stmt);
          while ($row = oci_fetch_assoc($stmt)){
-           print "<OPTION value=".str_replace(' ','+',$row['CATEGORY']).">".$row['CATEGORY']."</option>";
+           print "<OPTION value=".$row['CATEGORY'].">".$row['CATEGORY']."</option>";
          }
 ?>
     </select>
@@ -175,6 +171,7 @@
     </div>
     </form>
     </div>
+  </div>
   </div>
 
 
