@@ -138,7 +138,8 @@
         $_SESSION['email'] = $email;
         $_SESSION['fname'] = $fname;
         $_SESSION['lname'] = $lname;
-        $_SESSION['name'] = $fname." ".$lname;
+	$_SESSION['name'] = $fname." ".$lname;
+        $_SESSION['phone'] = $phone;
 
         header("Location: index.php");
        }

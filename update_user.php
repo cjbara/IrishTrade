@@ -42,6 +42,32 @@
 if($errorCount == 0) {
   //update fields
   //TODO 
+  $id = $_SESSION['user_id'];
+  $conn = oci_connect("guest", "guest", "xe");
+  $fname_stmt = oci_parse($conn, "begin user_pack.update_fname(:id, :fname); end;");
+  $lname_stmt = oci_parse($conn, "begin user_pack.update_lname(:id, :lname); end;");
+  $email_stmt = oci_parse($conn, "begin user_pack.update_email(:id, :email); end;");
+  $phone_stmt = oci_parse($conn, "begin user_pack.update_phone(:id, :phone); end;");
+
+  oci_bind_by_name($fname_stmt, ":id", $id);
+  oci_bind_by_name($fname_stmt, ":fname", $fname);
+  oci_bind_by_name($lname_stmt, ":id", $id);
+  oci_bind_by_name($lname_stmt, ":lname", $lname);
+  oci_bind_by_name($email_stmt, ":id", $id);
+  oci_bind_by_name($email_stmt, ":email", $email);
+  oci_bind_by_name($phone_stmt, ":id", $id);
+  oci_bind_by_name($phone_stmt, ":phone", $phone);
+
+  oci_execute($fname_stmt);
+  oci_execute($lname_stmt);
+  oci_execute($email_stmt);
+  oci_execute($phone_stmt);
+
+  $_SESSION['fname'] = $fname;
+  $_SESSION['lname'] = $lname;
+  $_SESSION['email'] = $email;
+  $_SESSION['phone'] = $phone;
+  $_SESSION['name'] = $fname." ".$lname;
 }
 
 
@@ -63,14 +89,14 @@ if($errorCount == 0) {
           <label for="fname">First Name</label>
         </div>
         <div class="input-field col s6">
-          <input id="fname" name="fname" type="text" class="validate" value="<?php echo $_SESSION['lname'];?>">
-          <label for="fname">Last Name</label>
+          <input id="lname" name="lname" type="text" class="validate" value="<?php echo $_SESSION['lname'];?>">
+          <label for="lname">Last Name</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12">
         <i class ="material-icons prefix">mail</i>
-          <input id="email" name="username" type="email" class="validate" value="<?php echo $_SESSION['email'];?>">
+          <input id="email" name="email" type="email" class="validate" value="<?php echo $_SESSION['email'];?>">
           <label for="email">Email</label>
         </div>
       </div>

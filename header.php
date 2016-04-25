@@ -15,6 +15,11 @@
     $(document).ready(function() {
       $('.modal-trigger').leanModal();
     });
+
+    $(document).ready(function() {
+      $('select').material_select();
+    });
+
   </script>
 </head>
 <body>
@@ -32,8 +37,15 @@
 <?php
   } else {
 ?>
-    <li><a href="update_user.php">Welcome, <?php echo $_SESSION['name'];?></a></li>
-    <li><a href="new_post.php">Create New Posting</a></li>
+
+    <li><a href="update_user.php">Welcome, <?php echo $_SESSION['email'];?></a></li>
+
+    <li><a href="#search-modal" class="modal-trigger"> <i class="material-icons">search</i></a></li>
+
+    <li><a href="#new-post-modal" class="modal-trigger" data-target="#new-post-modal">Create New Post</a></li>
+
+    <li><a href="users_posts.php">View your posts</a></li>
+
     <li><a href="#messages-modal" class="modal-trigger">Messages</a>
     <li><a href="logout.php">Logout</a></li>
 <?php
@@ -44,6 +56,128 @@
     </div>
   </nav>
 
+  <!-- Search Modal Structure -->
+  <div id="search-modal" class="modal">
+    <div class="modal-content">
+      <h4>Search Posts</h4>
+      <form class="col s12" action="index.php" method="get">
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="query" name="query" type="text" class="validate">
+          <label for="query">Keywords</label>
+        </div>
+      </div>
+
+  <div class="row">
+    <div class="input-field col s12">
+     <select name="category">
+      <option value="" disabled selected>Select a Category</option>
+<?php
+         $conn = oci_connect("guest", "guest", "xe");
+         $stmt = oci_parse($conn, "select * from categories order by category");
+         oci_define_by_name($stmt, "CATEGORY", $c);
+         oci_execute($stmt);
+         while ($row = oci_fetch_assoc($stmt)){
+           print "<OPTION value=".str_replace(' ','+',$row['CATEGORY']).">".$row['CATEGORY']."</option>";
+         }
+?>
+    </select>
+    <label>Category</label>
+  </div>
+ </div>
+
+
+    <div class="modal-footer">
+      <button type="submit" class=" modal-action modal-close waves-effect waves-green btn-flat">Search</button>
+    </div>
+    </form>
+    </div>
+  </div>
+
+
+  <!-- Create New Post Modal Structure -->
+  <div id="new-post-modal" class="modal">
+    <div class="modal-content">
+      <h4>Create New Post</h4>
+      <form class="col s12" action="new_post.php" method="post" enctype="multipart/form-data">
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="title" name="title" type="text" class="validate">
+          <label for="title">Post Title</label>
+        </div>
+      </div>
+
+  <div class="row">
+    <div class="input-field col s12">
+     <select name="category">
+      <option value="" disabled selected>Select a Category</option>
+<?php
+         $conn = oci_connect("guest", "guest", "xe");
+         $stmt = oci_parse($conn, "select * from categories order by category");
+         oci_define_by_name($stmt, "CATEGORY", $c);
+         oci_execute($stmt);
+         while ($row = oci_fetch_assoc($stmt)){
+           print "<OPTION value=".$row['CATEGORY_ID'].">".$row['CATEGORY']."</option>";
+         }
+?>
+    </select>
+    <label>Category</label>
+  </div>
+ </div>
+
+  <div class="row">
+        <div class="input-field col s6">
+          <input id="price" name="price" type="text" class="validate">
+          <label for="price">Price</label>
+        </div>
+
+   <div class="input-field col s6">
+     <p>
+      <input type="checkbox" id="best" name="best" />
+      <label for="best">Or Best Offer</label>
+     </p>
+    </div>
+  </div>
+
+
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="desc" name="desc" type="text" class="validate">
+          <label for="desc">Description</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="location" name="location" type="text" class="validate">
+          <label for="location">Location</label>
+        </div>
+      </div>
+
+
+
+
+   <div class="row">
+    <div class="file-field input-field">
+      <div class="btn">
+        <span>Image</span>
+        <input type="file" name="image">
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+    </div>
+
+
+
+    <div class="modal-footer">
+      <button type="submit" name="submit" class=" modal-action modal-close waves-effect waves-green btn-flat">Submit</button>
+    </div>
+    </form>
+    </div>
+  </div>
+
+
   <!-- Login Modal Structure -->
   <div id="login-modal" class="modal">
     <div class="modal-content">
@@ -51,12 +185,14 @@
       <form class="col s12" action="login.php" method="post">
       <div class="row">
         <div class="input-field col s12">
+        <i class ="material-icons prefix">person</i>
           <input id="email" name="username" type="email" class="validate">
           <label for="email">Email</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12">
+        <i class ="material-icons prefix">vpn_key</i>
           <input id="password" name="password" type="password" class="validate">
           <label for="password">Password</label>
         </div>
@@ -67,6 +203,8 @@
     </form>
     </div>
   </div>
+
+
   <!-- Sign Up Modal Structure -->
   <div id="sign-up-modal" class="modal modal-fixed-footer">
     <div class="modal-content">
@@ -86,7 +224,7 @@
       <div class="row">
         <div class="input-field col s12">
         <i class ="material-icons prefix">mail</i>
-          <input id="email" name="username" type="email" class="validate">
+          <input id="email" name="email" type="email" class="validate">
           <label for="email">Email</label>
         </div>
       </div>
@@ -100,7 +238,7 @@
       <div class="row">
         <div class="input-field col s6">
         <i class ="material-icons prefix">vpn_key</i>
-          <input id="password" name="password" type="password" class="validate">
+          <input id="password" name="pw" type="password" class="validate">
           <label for="password">Password</label>
         </div>
         <div class="input-field col s6">

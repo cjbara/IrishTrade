@@ -26,7 +26,9 @@
   
   oci_execute($curs);
   while (($row = oci_fetch_array($curs, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
-    print "<p>".$row['SENDER']." to ".$row['RECEIVER']." ".$row['TEXT']." ".$row['TIMESTAMP'] ."</p>";
+    print "<p>".$row['SENDER']." to ".$row['RECEIVER']." on ".$row['TIMESTAMP']."</p>";
+    print "<p>   "   .$row['TEXT'];
+    print "<p>";
   }
   oci_free_statement($stid);
   oci_free_statement($curs);
@@ -50,8 +52,5 @@
       </form>';
   }
 
-  ?>
-</body>
-</html>
-    
-  
+  require 'footer.php';
+?>

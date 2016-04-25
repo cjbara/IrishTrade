@@ -1,5 +1,6 @@
 <?php
-   require 'header.php';
+  session_start();
+
      // define variables and set to empty values
      $priceErr = $titleErr = $descErr = $categoryErr = $locationErr = "";
      $price = $title = $desc = $category_id = $location = $best = $free = "";
@@ -37,11 +38,11 @@
            $desc = test_input($_POST["desc"]);
         }
 
-        if (empty($_POST["category_id"])) {
+        if (empty($_POST["category"])) {
            $categoryErr = "Category is required";
            $errorCount++;
         }else {
-           $category_id = test_input($_POST["category_id"]);
+           $category_id = test_input($_POST["category"]);
         }
         
         if (empty($_POST["location"])) {
@@ -65,11 +66,14 @@
           oci_bind_by_name($stmt, ":category", $category_id);
           oci_bind_by_name($stmt, ":location", $location);
           oci_execute($stmt);
-        /*  if (isset($_FILES['image'])) {
+          print_r($_FILES);
+          if (isset($_FILES['image'])) {
+            echo "Image code";
             $lob = oci_new_descriptor($conn, OCI_D_LOB);
             $stmt = oci_parse($conn, 'insert into images (post_id, image) '
-                   .'values (3, EMPTY_BLOB()) returning image into :IMAGE');
+                   .'values (:post_id, EMPTY_BLOB()) returning image into :IMAGE');
             oci_bind_by_name($stmt, ':IMAGE', $lob, -1, OCI_B_BLOB);
+            oci_bind_by_name($stmt, ':post_id', $post_id);
             oci_execute($stmt, OCI_DEFAULT);
             if ($lob->savefile($_FILES['image']['tmp_name'])) {
               oci_commit($conn);
@@ -78,8 +82,8 @@
               echo "Couldn't upload Blob\n";
             }
             $lob->free();
-          }*/
-          //header("Location: view_post.php?post_id=$post_id");
+          }
+          header("Location: view_post.php?post_id=".$post_id);
         }
      }
 
@@ -89,78 +93,4 @@
         $data = htmlspecialchars($data);
         return $data;
      }
-  ?>
-		
-  <h2>Create New Post</h2>
-  
-  <p><span class = "error">* required field.</span></p>
-  
-  <form method = "POST" action = "<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-     <table>
-        <tr>
-           <td>Post Title:</td>
-           <td><input type = "text" name = "title">
-              <span class = "error">* <?php echo $titleErr;?></span>
-           </td>
-        </tr>
-        
-        <tr>
-           <td>Price:</td>
-           <td><input type="text" name = "price" onkeypress='return (event.charCode == 46) || (event.charCode >= 48 && event.charCode <= 57)' >
-              <span class = "error">* <?php echo $priceErr;?></span>
-           </td>
-        </tr>
-
-        <tr>
-           <td>Or Best Offer:</td>
-           <td><input type="checkbox" name = "best">
-           </td>
-        </tr>
-
-        <tr>
-           <td>Description:</td>
-           <td><input type = "text" name = "desc">
-              <span class = "error">* <?php echo $descErr;?></span>
-           </td>
-        </tr>
-        
-        <tr>
-           <td>Location:</td>
-           <td><input type = "text" name = "location">
-              <span class = "error">* <?php echo $locationErr;?></span>
-           </td>
-        </tr>
-
-        <tr>
-           <td>Category:</td>
-           <td><select name = "category_id">
-                 <?php 
-                   $conn = oci_connect("guest", "guest", "xe");
-                   $stmt = oci_parse($conn, "select * from categories");
-                   oci_define_by_name($stmt, "CATEGORY", $c);
-                   oci_execute($stmt);
-                   while ($row = oci_fetch_assoc($stmt)){
-                     print "<OPTION value=".$row['CATEGORY_ID'].">".$row['CATEGORY']."\n";
-                   }
-                 ?>
-              </select>
-              <span><a href="new_category.php">Add a new category</a></span>
-              <span class = "error">* <?php echo $categoryErr;?></span>
-           </td>
-        </tr>
-        <tr>
-           <td>Image:</td>
-           <td><input type = "file" name = "image"></td>
-        </tr>
-        
-        <tr>
-           <td>
-              <input type = "submit" name = "submit" value = "Submit"> 
-           </td>
-        </tr>
-        
-     </table>
-  </form>
-<?php
- require 'footer.php';
 ?>

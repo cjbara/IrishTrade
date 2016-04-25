@@ -1,28 +1,12 @@
 <?php
-  session_start();
-?>
-<html>
-<head>
-  <title>IrishTrade</title>
-</head>
-<body>
-<?php
-  if( empty($_SESSION['valid']) ) {
-    //The user is not logged in
-    print "<a href=\"login.php\">Login</a> ";
-    print "<a href=\"new_user.php\">Sign Up</a>";
-  } else {
-    print "<p>You are logged in as ".$_SESSION['name']."</p>";
-    print "<a href=\"logout.php\">Logout</a> ";
-    print "<a href=\"index.php\">Home</a>";
-  }
+  require 'header.php';
   $conn = oci_connect("guest", "guest", "xe");
 
   //If the user just posted a new comment
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $errorCount = 0;
     $post_id = $_GET['post_id'];
-    $user_id = 1;
+    $user_id = $_SESSION['user_id'];
     if (empty($_POST["comment"])) {
       $errorCount++;
     } else {
@@ -57,7 +41,16 @@
   oci_execute($post_cursor);
 
   while( $row = oci_fetch_array($post_cursor) ) {
-    print "<p><b>".$row['NAME']."</b> ".$row['TITLE'];
+?>
+  <!-- Main structure -->
+  <div class="container">
+    <div class="row">
+<?php
+
+    print "<p><b>".$row['TITLE']."</b> ";
+    print "</p>";
+    print "<p><img src=\"view_image.php?post_id=".$row['POST_ID']."\"></p>";
+
     if($row['FREE']) {
       print "FREE";
     } else {
@@ -66,11 +59,40 @@
         print " or best offer";
       }
     }
-    print "<br>".$row['POST_TIME']."<br>";
+    print "</p><p>".$row['POST_TIME']."</p><p>";
     print $row['DESCRIPTION']."<br>";
-    print "Category: ".$row['CATEGORY']."<br>";
+    print "Category: ".$row['CATEGORY']."</p><p>";
     print "Location: ".$row['LOCATION']."</p>";
 
+
+  if( !empty($_SESSION['valid']) ) {
+
+?>
+
+
+
+  <a href="#new-message-modal" class="modal-trigger waves-effect waves-green btn" data-target="#new-message-modal">Send Message to <?php print $row['NAME'];?></a>
+  <!-- New Message Modal Structure -->
+  <div id="new-message-modal" class="modal">
+    <div class="modal-content">
+      <h4>New Message to <?php print $row['NAME'];?></h4>
+      <form class="col s12" action="messages.php?id=<?php print $row['USER_ID'];?>" method="post">
+      <div class="row">
+        <div class="input-field col s12">
+          <i class="material-icons prefix">mode_edit</i>
+          <textarea id="message" name="message" class="materialize-textarea"></textarea>
+          <label for="message">Message</label>
+        </div>
+      </div>
+    <div class="modal-footer">
+      <button type="submit" name="send" class=" modal-action modal-close waves-effect waves-green btn-flat">Send Message</button>
+    </div>
+    </form>
+    </div>
+  </div>
+
+<?php
+}
     //Display all comments for the post
     $comment_query = "begin comment_pack.comments_for_post(:post_id, :comment_info); end;";
     $comments = oci_parse($conn, $comment_query);
@@ -94,33 +116,30 @@
   }
   oci_free_statement($post);
   oci_close($conn);
-
   if( !empty($_SESSION['valid']) ) {
-      print '<form method = "POST" action = "'.htmlspecialchars($_SERVER['PHP_SELF']).'?post_id='.$_GET['post_id'].'">
-         <table>
-            <tr>
-               <td>Comment:</td>
-               <td><input type = "text" name = "comment">
-               </td>
-            </tr>
-
-            <tr>
-               <td>Anonymous:</td>
-               <td><input type="checkbox" name = "anon">
-               </td>
-            </tr>
-
-            <input type="hidden" name="post_id" value='.$_GET['post_id'].'>
-            <tr>
-               <td>
-                  <input type = "submit" name = "submit" value = "Comment">
-               </td>
-            </tr>
-         </table>
-      </form>';
+      print '<form class="col s12" method = "POST" action = "'.htmlspecialchars($_SERVER['PHP_SELF']).'?post_id='.$_GET['post_id'].'">';
+?>
+      <input type="hidden" name="post_id" value='.$_GET['post_id'].'>
+      <div class="row">
+        <div class="input-field col s6">
+        <i class ="material-icons prefix">comment</i>
+          <input id="comment" name="comment" type="text" class="validate">
+          <label for="comment">Comment</label>
+        </div>
+        <div class="input-field col s2">
+          <p>
+             <input type="checkbox" name="anon" id="anon" />
+             <label for="anon">Anonymous</label>
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s3">
+        <button type="submit" name="submit" class=" modal-action modal-close waves-effect waves-green btn">Comment</button>
+        </div>
+      </div>
+      </form>
+<?php
   }
-  ?>
-</body>
-</html>
-    
-  
+  require 'footer.php';
+?>
