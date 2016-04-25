@@ -9,5 +9,5 @@
    
    echo '<a href="index.php">Home</a><br>';
    echo 'You have successfully logged out';
-   header('Refresh: 1; URL = index.php');
+   header('Location: index.php');
 ?>

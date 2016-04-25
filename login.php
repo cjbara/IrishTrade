@@ -46,6 +46,7 @@
                   $_SESSION['email'] = $row['EMAIL'];
                   $_SESSION['fname'] = $row['FNAME'];
                   $_SESSION['lname'] = $row['LNAME'];
+                  $_SESSION['phone'] = $row['PHONENUMBER'];
                   $_SESSION['name'] = $row['FNAME']." ".$row['LNAME'];
 
                   echo 'You have entered valid user name and password';
