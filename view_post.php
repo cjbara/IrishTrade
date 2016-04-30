@@ -45,12 +45,22 @@
   <!-- Main structure -->
   <div class="container">
     <div class="row">
+      <div class="col s6 m6">
 <?php
 
-    print "<p><b>".$row['TITLE']."</b> ";
-    print "</p>";
-    print "<p><img src=\"view_image.php?post_id=".$row['POST_ID']."\"></p>";
+    print "<h4><b>".$row['TITLE']."</b> ";
+    print "</h4></div>";
+    print "<div class=\"col s6 m6\"><h5>Seller: ".$row['NAME']."</h5></div>";
+?>
+    </div><div class="row">
+      <div class="col s5 m5">
 
+<?php
+    print "<p><img class=\"responsive-img\" src=\"view_image.php?post_id=".$row['POST_ID']."\"></p>";
+?>
+    </div>
+    <div class="col s7 m7"><br>
+<?php
     if($row['FREE']) {
       print "FREE";
     } else {
@@ -60,7 +70,7 @@
       }
     }
     print "</p><p>".$row['POST_TIME']."</p><p>";
-    print $row['DESCRIPTION']."<br>";
+    print $row['DESCRIPTION']."</p>";
     print "Category: ".$row['CATEGORY']."</p><p>";
     print "Location: ".$row['LOCATION']."</p>";
 
@@ -68,10 +78,10 @@
   if( !empty($_SESSION['valid']) ) {
 
 ?>
-
-
-
   <a href="#new-message-modal" class="modal-trigger waves-effect waves-green btn" data-target="#new-message-modal">Send Message to <?php print $row['NAME'];?></a>
+  </div></div>
+
+
   <!-- New Message Modal Structure -->
   <div id="new-message-modal" class="modal">
     <div class="modal-content">
@@ -102,7 +112,7 @@
     oci_execute($comments);
     oci_execute($comment_cursor);
 
-    print "<p><b>Comments</b></p>";
+    print "<h5><b>Comments</b></h5>";
     while( $comment = oci_fetch_array($comment_cursor) ) {
       print "<p><b>";
       if( $comment['A'] ) {
@@ -124,7 +134,7 @@
         <div class="input-field col s6">
         <i class ="material-icons prefix">comment</i>
           <input id="comment" name="comment" type="text" class="validate">
-          <label for="comment">Comment</label>
+          <label for="comment">New Comment</label>
         </div>
         <div class="input-field col s2">
           <p>

@@ -1,5 +1,5 @@
 <?php
-  require 'header.php';
+  require 'header2.php';
 ?>
   <!-- Main structure -->
   <div class="container">
@@ -38,16 +38,15 @@
   oci_execute($curs);
   while(($row = oci_fetch_array($curs, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
 ?>
-    <div class="col s4 m4">
-    <div class="card medium">
-      <div class="card-image waves-effect waves-block waves-light">
-        <img class="activator" src="view_image.php?post_id=<?php echo $row['POST_ID'];?>">
-      </div>
-      <div class="card-content">
-        <span class="card-title activator grey-text text-darken-4">
-        <i class="material-icons right">more_vert</i>
+    <div class="col s6 m4">
+          <div class="card medium blue darken-4">
+            <div class="card-image">
+              <img height="100%" width="auto" src="view_image.php?post_id=<?php echo $row['POST_ID'];?>">
+            </div>
+            <div class="card-content white-text">
+           <span><b><?php print $row['TITLE'];?></b></span>
+              <p>
 <?php
-        print $row['TITLE']."<br>";
         if($row['FREE']) {
           print "FREE";
         } else {
@@ -56,29 +55,22 @@
             print " or best offer";
           }
         }
+
+        print "<br>Category: ".$row['CATEGORY']."<br>";
 ?>
-        </span>
-	<p>
-        <?php print "<a href=\"view_post.php?post_id=".$row['POST_ID']."\">Details</a>"; ?>
-        </p>
-      </div>
-      <div class="card-reveal">
-        <span class="card-title grey-text text-darken-4">
-<?php
-        print $row['TITLE'];
+            </div>
+            <div class="card-action">
+<?php 
+            print "<a href=\"view_post.php?post_id=".$row['POST_ID']."\"class=\"yellow-text\" >View Details</a>";
+            if(!empty($_SESSION['valid'])){
+             if($_SESSION['user_id'] == $row['USER_ID']) {
+              print "<a href=\"edit_post.php?post_id=".$row['POST_ID']."\" class=\"yellow-text\">Edit Post</a>";
+             }
+            }
 ?>
-        <i class="material-icons right">close</i></span>
-        <p>
-<?php
-        print $row['DESCRIPTION']."<br>";
-	$time = $row['TIMESTAMP'];
-        print $row['TIMESTAMP']."<br>";
-        print "Category: ".$row['CATEGORY']."<br>";
-        print "Location: ".$row['LOCATION']."</p>";
-?>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 <?php
   }
   print "</div>";
