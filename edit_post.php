@@ -1,5 +1,5 @@
 <?php
-  include 'header2.php';
+  include 'header.php';
 
   $conn = oci_connect("guest", "guest", "xe");
   $stmt = oci_parse($conn, "begin post_pack.get_post_info(:id, :cursor); end;");

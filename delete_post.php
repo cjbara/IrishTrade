@@ -1,5 +1,5 @@
 <?php
-  require 'header2.php';
+  require 'header.php';
 
   $post_id = $_GET['id'];
   $user_id = $_SESSION['user_id'];
