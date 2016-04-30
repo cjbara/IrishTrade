@@ -25,13 +25,23 @@ if( empty($_SESSION['valid']) ) {
   while(($row = oci_fetch_array($curs, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
 ?>
         <li class="collection-item avatar">
+        <i class="material-icons circle">email</i>
         <span class="title">
 <?php 
   if($row['SENDER_ID'] == $_SESSION['user_id']) { echo "To: ".$row['RECEIVER']; }
   else { echo "From: ".$row['SENDER']; }
 ?>
         </span>
-        <p><?php echo $row['TEXT']."<br>".$row['TIMESTAMP'];?></p>
+        <p>
+<?php 
+        echo $row['TEXT'];
+    if($row['READ'] == 1 && $row['SENDER'] == $_SESSION['name']) {
+       echo '<div class="chip">
+    READ by '.$row['RECEIVER'].'
+    <i class="material-icons">close</i>
+  </div>';
+    }
+        echo"<br>".$row['TIMESTAMP'];?></p>
 <?php
     echo "<a href=\"messages.php?id=";
   if($row['SENDER_ID'] == $_SESSION['user_id']) { echo $row['RECEIVER_ID']; }

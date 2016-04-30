@@ -70,10 +70,10 @@
           if (isset($_FILES['image'])) {
             echo "Image code";
             $lob = oci_new_descriptor($conn, OCI_D_LOB);
-            $stmt = oci_parse($conn, 'insert into images (post_id, image) '
-                   .'values (:post_id, EMPTY_BLOB()) returning image into :IMAGE');
-            oci_bind_by_name($stmt, ':IMAGE', $lob, -1, OCI_B_BLOB);
-            oci_bind_by_name($stmt, ':post_id', $post_id);
+            $stmt = oci_parse($conn, 'begin image_pack.update_image(:id, :postid, :image); end;');
+            oci_bind_by_name($stmt, ':image', $lob, -1, OCI_B_BLOB);
+            oci_bind_by_name($stmt, ':postid', $post_id);
+            oci_bind_by_name($stmt, ':id', $image_id);
             oci_execute($stmt, OCI_DEFAULT);
             if ($lob->savefile($_FILES['image']['tmp_name'])) {
               oci_commit($conn);

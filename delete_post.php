@@ -1,5 +1,5 @@
 <?php
-  require 'header.php';
+  session_start();
 
   $post_id = $_GET['id'];
   $user_id = $_SESSION['user_id'];
@@ -13,5 +13,4 @@
 
   header("Location: index.php");
 
-  require 'footer.php';
 ?>

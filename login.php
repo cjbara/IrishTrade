@@ -54,6 +54,7 @@
                  }
                } else {
                   $msg = 'Wrong username or password';
+                  header('Location: index.php?login=error');
                }
             }
          ?>

@@ -36,7 +36,18 @@
   oci_execute($stmt);
 
   oci_execute($curs);
+  
+  $records = 0;
+  $onlyUserPosts = false;
+    if(isset($_GET['user_posts'])){
+      $onlyUserPosts = true;
+    }
+    if(isset($_SESSION['user_id']) && $onlyUserPosts == true){
+      $onlyUserPosts = true;
+    }
   while(($row = oci_fetch_array($curs, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
+      if(empty($_SESSION['user_id']) || $row['USER_ID'] == $_SESSION['user_id'] || $onlyUserPosts == false){
+      if($row['SOLD'] == 0 || $onlyUserPosts == true){
 ?>
     <div class="col s6 m4">
           <div class="card medium blue darken-4">
@@ -44,7 +55,14 @@
               <img height="100%" width="auto" src="view_image.php?post_id=<?php echo $row['POST_ID'];?>">
             </div>
             <div class="card-content white-text">
-           <span><b><?php print $row['TITLE'];?></b></span>
+           <span><b>
+<?php 
+           print $row['TITLE'];
+           if($row['SOLD'] == 1) {
+              print " - SOLD";
+           }
+?> 
+           </b></span>
               <p>
 <?php
         if($row['FREE']) {
@@ -72,7 +90,23 @@
           </div>
         </div>
 <?php
+    $records = $records + 1;
+      }
+    }
   }
+ 
+  if($records == 0) {
+    ?>
+    <div class="row">
+      <div class="col s12 m12">
+        <div class="card-panel teal">
+          <span class="white-text">Sorry! No results found!</span>
+        </div>
+      </div>
+    </div>
+<?php
+  }
+
   print "</div>";
 
   oci_free_statement($stmt);

@@ -11,16 +11,30 @@
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Form Validation -->
+  <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.js"></script>
+
   <script>
     $(document).ready(function() {
       $('.modal-trigger').leanModal();
       $('select').material_select();
       $('.progress').hide();
+<?php
+   if(isset($_GET['login'])){
+?>
+     $('#login-modal').openModal();
+     $('#loginError').attr('data-error', 'Login Error');
+     $('#login-modal #email').addClass('invalid');
+     $('#login-modal #password').addClass('invalid');
+<?php
+   }
+?>
     });
     $('#upload').click(function() {
       $('.progress').show();
     });
-    jQuery("img").LoadDefault({defaultImage: "nd.jpg" });
+
   </script>
 </head>
 <body>
@@ -59,7 +73,7 @@
   <ul id="dropdown1" class="dropdown-content">
       <li><a href="#new-post-modal" class="modal-trigger" data-target="#new-post-modal">Create New Post</a></li>
       <li class="divider"></li>
-      <li><a href="user_posts.php">View your posts</a></li>
+      <li><a href="index.php?user_posts=true">View your posts</a></li>
       <li class="divider"></li>
       <li><a href="#messages-modal" class="modal-trigger">Messages</a>
       <li class="divider"></li>
@@ -142,7 +156,7 @@
 
   <div class="row">
         <div class="input-field col s6">
-          <input id="price" name="price" type="text" class="validate">
+          <input id="price" name="price" type="text" class="validate" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46'>
           <label for="price">Price</label>
         </div>
 
@@ -205,15 +219,15 @@
       <div class="row">
         <div class="input-field col s12">
         <i class ="material-icons prefix">person</i>
-          <input id="email" name="username" type="email" class="validate">
+          <input id="email" name="username" type="email" >
           <label for="email">Email</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12">
         <i class ="material-icons prefix">vpn_key</i>
-          <input id="password" name="password" type="password" class="validate">
-          <label for="password">Password</label>
+          <input id="password" name="password" type="password">
+          <label for="password" id="loginError">Password</label>
         </div>
       </div>
     <div class="modal-footer">

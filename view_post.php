@@ -48,9 +48,13 @@
       <div class="col s6 m6">
 <?php
 
-    print "<h4><b>".$row['TITLE']."</b> ";
-    print "</h4></div>";
-    print "<div class=\"col s6 m6\"><h5>Seller: ".$row['NAME']."</h5></div>";
+    print "<h4><b>".$row['TITLE'];
+    if($row['SOLD'] == 1) {
+        print " - SOLD";
+    }
+    print "</b></h4></div>";
+    print "<div class=\"col s6 m6\"><h5>Seller: ".$row['NAME'];
+    print "</h5></div>";
 ?>
     </div><div class="row">
       <div class="col s5 m5">
