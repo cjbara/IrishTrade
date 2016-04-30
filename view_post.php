@@ -52,6 +52,12 @@
   oci_execute($post_cursor);
 
   while( $row = oci_fetch_array($post_cursor) ) {
+    $own_post = false;
+    if( !empty($_SESSION['valid']) ) {
+       if( $_SESSION['user_id'] == $row['USER_ID'] ) {
+          $own_post = true;
+       }
+    }
 ?>
   <!-- Main structure -->
   <div class="container">
@@ -68,12 +74,8 @@
     }
     print "</b></h4></div>";
     print "<div class=\"col s6 m6\">";
-    if( !empty($_SESSION['valid']) ) {
-       if( $_SESSION['user_id'] == $row['USER_ID'] ) {
-          print '<a href="edit_post.php?post_id='.$row['POST_ID'].'" class="waves-effect waves-green btn">Edit Post</a>';
-       } else {
-          print "<h5>Seller: ".$row['NAME']."</h5>";
-       }
+    if($own_post){
+       print '<a href="edit_post.php?post_id='.$row['POST_ID'].'" class="waves-effect waves-green btn">Edit Post</a>';
     } else {
       print "<h5>Seller: ".$row['NAME']."</h5>";
     }
@@ -104,8 +106,12 @@
 
   if( !empty($_SESSION['valid']) ) {
 
+    if(!$own_post){
 ?>
   <a href="#new-message-modal" class="modal-trigger waves-effect waves-green btn" data-target="#new-message-modal">Send Message to <?php print $row['NAME'];?></a>
+<?php
+    }
+?>
   </div></div>
 
 
