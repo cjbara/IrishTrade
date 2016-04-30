@@ -1,126 +1,79 @@
 <?php
    session_start();
-?>
-<html>
-   
-   <head>
-      <style>
-         .error {color: #FF0000;}
-      </style>
-   </head>
-   
-   <body> 
-      <?php
-         print "<a href=\"index.php\">Home</a> ";
-         // define variables and set to empty values
-         $fnameErr =$unameErr = $lnameErr = $emailErr = $pwErr = $phoneErr = $websiteErr = "";
-         $fname = $lname = $uname = $phone = $email = $pw = "";
+ // define variables and set to empty values
+ $fnameErr =$unameErr = $lnameErr = $emailErr = $pwErr = $phoneErr = $websiteErr = "";
+ $fname = $lname = $uname = $phone = $email = $pw = "";
+ $errorCount = 1;
+ 
+ if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $errorCount = 0;
+    if (empty($_POST["fname"])) {
+       header("Location: index.php?error=signup&error_type=fname");
+       $errorCount = 1;
+       $fnameErr = "FirstName is required";
+    }else {
+       $fname = $_POST["fname"];
+       if(strlen($fname) > 20){
+          header("Location: index.php?error=signup&error_type=fname_invalid");
+          $errorCount = 1;
+       }
+    }
+
+    if (empty($_POST["lname"])) {
+       header("Location: index.php?error=signup&error_type=lname");
+       $errorCount = 1;
+       $lnameErr = "Last Name is required";
+    }else {
+       $lname = $_POST["lname"];
+       if(strlen($lname) > 30){
+          header("Location: index.php?error=signup&error_type=lname_invalid");
+          $errorCount = 1;
+       }
+    }
+
+    if (empty($_POST["pw"]) || empty($_POST["pw2"])) {
+       header("Location: index.php?error=signup&error_type=pw");
+       $errorCount = 1;
+       $unameErr = "Password is required";
+    }else {
+       if(( $_POST['pw'] != $_POST['pw2']) || (strlen($_POST['pw']) > 30)) {
+         header("Location: index.php?error=signup&error_type=pw_invalid");
          $errorCount = 1;
-         
-         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $errorCount = 0;
-            if (empty($_POST["fname"])) {
-               $fnameErr = "FirstName is required";
-            }else {
-               $fname = test_input($_POST["fname"]);
-            }
+       } else {
+         $pw = $_POST["pw"];
+       }
+    }
 
-            if (empty($_POST["lname"])) {
-               $lnameErr = "Last Name is required";
-            }else {
-               $lname = test_input($_POST["lname"]);
-            }
-
-
-
-            if (empty($_POST["pw"])) {
-               $unameErr = "Password is required";
-            }else {
-               $pw = test_input($_POST["pw"]);
-            }
-
-            if (empty($_POST["phone"])) {
-               $unameErr = "Phone Number is required";
-            }else {
-               $phone = test_input($_POST["phone"]);
-            }
-            
-            if (empty($_POST["email"])) {
-               $emailErr = "Email is required";
-            }else {
-               $email = test_input($_POST["email"]);
-               
-               // check if e-mail address is well-formed
-               if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                  $emailErr = "Invalid email format"; 
-               }
-            }
-            
-         }
-         
-         function test_input($data) {
-            $data = trim($data);
-            $data = stripslashes($data);
-            $data = htmlspecialchars($data);
-            return $data;
-         }
-      ?>
-		
-      <h2>Register New User</h2>
-      
-      <p><span class = "error">* required field.</span></p>
-      
-      <form method = "POST" action = "<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-         <table>
-            <tr>
-               <td>First Name:</td>
-               <td><input type = "text" name = "fname">
-                  <span class = "error">* <?php echo $fnameErr;?></span>
-               </td>
-            </tr>
-            
-            <tr>
-               <td>Last Name:</td>
-               <td><input type = "text" name = "lname">
-                  <span class = "error">* <?php echo $lnameErr;?></span>
-               </td>
-            </tr>
-
-
-            <tr>
-               <td>E-mail: </td>
-               <td><input type = "text" name = "email">
-                  <span class = "error">* <?php echo $emailErr;?></span>
-               </td>
-            </tr>
-
-            
-            <tr>
-               <td>Phone Number:</td>
-               <td><input type = "text" name = "phone">
-                  <span class = "error">* <?php echo $phoneErr;?></span>
-               </td>
-            </tr>
-
-            <tr>
-               <td>Password:</td>
-               <td><input type = "password" name = "pw">
-                  <span class = "error">* <?php echo $pwErr;?></span>
-               </td>
-            </tr>
-
-
-            
-            <tr>
-               <td>
-                  <input type = "submit" name = "submit" value = "Submit"> 
-               </td>
-            </tr>
-            
-         </table>
-      </form>
-      
-      <?php
+    if (empty($_POST["phone"])) {
+       header("Location: index.php?error=signup&error_type=phone");
+       $errorCount = 1;
+       $unameErr = "Phone Number is required";
+    }else {
+       $phone = $_POST["phone"];
+       if(! preg_match("/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/", $phone)){
+          $errorCount = 1;
+          header("Location: index.php?error=signup&error_type=phone_invalid");
+       }
+    }
+    
+    if (empty($_POST["email"])) {
+       header("Location: index.php?error=signup&error_type=email");
+       $errorCount = 1;
+       $emailErr = "Email is required";
+    }else {
+       $email = $_POST["email"];
+       
+       // check if e-mail address is well-formed
+       $allowed = "nd.edu";
+       $explodedEmail = explode('@', $email);
+       $domain = array_pop($explodedEmail);
+       if(!(filter_var($email, FILTER_VALIDATE_EMAIL) && $domain == $allowed )) {
+          header("Location: index.php?error=signup&error_type=email_invalid");
+          $errorCount = 1;
+          $emailErr = "Invalid email format"; 
+       }
+    }
+    
       if($errorCount == 0){
         $insert = "begin user_pack.new_user(:id, :email, :pw, :first, :last, :phone); end;";
         $conn = oci_connect("guest", "guest", "xe");
@@ -143,7 +96,5 @@
 
         header("Location: index.php");
        }
-      ?>
-      
-   </body>
-</html>
+     }
+?>

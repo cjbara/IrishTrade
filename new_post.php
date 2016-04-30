@@ -14,7 +14,11 @@
            $price = 0;
            $free = 1;
         }else {
-           $price = test_input($_POST["price"]);
+           $price = $_POST["price"];
+           if(!is_numeric($price)){
+             $errorCount = 1;
+             header("Location: index.php?error=create&error_type=price");
+           }
            $free = 0;
         }
 
@@ -25,31 +29,47 @@
         }
 
         if (empty($_POST["title"])) {
+           header("Location: index.php?error=create&error_type=title");
            $titleErr = "Title is required";
            $errorCount++;
         }else {
-           $title = test_input($_POST["title"]);
+           $title = $_POST["title"];
+           if(strlen($title) > 30){
+              header("Location: index.php?error=create&error_type=title_invalid");
+              $errorCount = 1;
+           }
         }
 
         if (empty($_POST["desc"])) {
+           header("Location: index.php?error=create&error_type=desc");
            $descErr = "Description is required";
            $errorCount++;
         }else {
-           $desc = test_input($_POST["desc"]);
+           $desc = $_POST["desc"];
+           if(strlen($desc) > 140){
+              header("Location: index.php?error=create&error_type=desc_invalid");
+              $errorCount = 1;
+           }
         }
 
         if (empty($_POST["category"])) {
+           header("Location: index.php?error=create&error_type=category");
            $categoryErr = "Category is required";
            $errorCount++;
         }else {
-           $category_id = test_input($_POST["category"]);
+           $category_id = $_POST["category"];
         }
         
         if (empty($_POST["location"])) {
+           header("Location: index.php?error=create&error_type=location");
            $locationErr = "Location is required";
            $errorCount++;
         }else {
-           $location = test_input($_POST["location"]);
+           $location = $_POST["location"];
+           if(strlen($location) > 50){
+              header("Location: index.php?error=create&error_type=location_invalid");
+              $errorCount = 1;
+           }
         }
         $sold = 0;
         
@@ -80,17 +100,11 @@
             }
             else {
               echo "Couldn't upload Blob\n";
+              header("Location: view_post.php?post_id=".$post_id."&image=fail");
             }
             $lob->free();
           }
           header("Location: view_post.php?post_id=".$post_id);
         }
-     }
-
-     function test_input($data) {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data);
-        return $data;
      }
 ?>

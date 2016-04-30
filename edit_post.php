@@ -18,7 +18,11 @@
            $price = 0;
            $free = 1;
         }else {
-           $price = test_input($_POST["price"]);
+           $price = $_POST["price"];
+           if(!is_numeric($price)){
+             $errorCount = 1;
+             $error_type = "price";
+           }
            $free = 0;
         }
 
@@ -29,31 +33,47 @@
         }
 
         if (empty($_POST["title"])) {
+           $error_type = "title";
            $titleErr = "Title is required";
            $errorCount++;
         }else {
-           $title = test_input($_POST["title"]);
+           $title = $_POST["title"];
+           if(strlen($title) > 30){
+              $error_type = "title_invalid";            
+              $errorCount = 1;
+           }
         }
 
         if (empty($_POST["desc"])) {
+           $error_type = "desc";
            $descErr = "Description is required";
            $errorCount++;
         }else {
-           $desc = test_input($_POST["desc"]);
+           $desc = $_POST["desc"];
+           if(strlen($desc) > 140){
+              $error_type = "desc_invalid";
+              $errorCount = 1;
+           }
         }
 
         if (empty($_POST["category"])) {
+           $error_type = "category";
            $categoryErr = "Category is required";
            $errorCount++;
         }else {
-           $category_id = test_input($_POST["category"]);
+           $category_id = $_POST["category"];
         }
 
         if (empty($_POST["location"])) {
+           $error_type = "location";
            $locationErr = "Location is required";
            $errorCount++;
         }else {
-           $location = test_input($_POST["location"]);
+           $location = $_POST["location"];
+           if(strlen($location) > 50){
+              $error_type = "location_invalid";
+              $errorCount = 1;
+           }
         }
         
         if( $errorCount == 0 ){
@@ -85,13 +105,38 @@
             }
             $lob->free();
           }
+        } else {
+     echo "<script>";
+     echo "$(document).ready(function() {";
+     echo "$('#success').hide();";
+     echo "$('#update-post-error').addClass('card-panel red');";
+     echo "$('#update-post-error-text').text('Could not update post.');";
+     if($error_type == 'title') {
+       echo "$('#update-post-error-text').append(' You must have a title for your post.');";
+     } else if($error_type == 'title_invalid') {
+       echo "$('#update-post-error-text').append(' Your title must be under 30 characters.');";
+     } else if($error_type == 'desc') {
+       echo "$('#update-post-error-text').append(' You must have a description for your post.');";
+     } else if($error_type == 'desc_invalid') {
+       echo "$('#update-post-error-text').append(' Your description must be under 140 characters.');";
+     } else if($error_type == 'category') {
+       echo "$('#update-post-error-text').append(' You must have a category for your post.');";
+     } else if($error_type == 'location') {
+       echo "$('#update-post-error-text').append(' You must have a location for your post.');";
+     } else if($error_type == 'location_invalid') {
+       echo "$('#update-post-error-text').append(' Your location must be under 50 characters.');";
+     } else if($error_type == 'price') {
+       echo "$('#update-post-error-text').append(' Price must be a number.');";
+     }
+     echo "});</script>";
         }
 ?>
     <div class = "container">
     <div class="row">
+        <div id="update-post-error"><span id="update-post-error-text" class="white-text"></span></div>
       <div class="col s12 m12">
         <a href="view_post.php?post_id=<?php echo $post_id;?>">
-        <div class="card-panel teal">
+        <div class="card-panel teal" id="success">
           <span class="white-text">You successfully updated your post! Click here to view it!</span>
         </div>
         </a>
@@ -153,7 +198,7 @@
   <br>
       <div class="row">
         <div class="input-field col s12">
-          <input id="title" name="title" type="text" class="validate" value="<?php echo $row['TITLE'];?>">
+          <input id="title" name="title" type="text" value="<?php echo $row['TITLE'];?>" length="30">
           <label for="title">Post Title</label>
         </div>
       </div>
@@ -181,7 +226,7 @@
 
 <div class="row">
         <div class="input-field col s6">
-          <input id="price" name="price" type="text" class="validate" value="<?php echo $row['PRICE'];?>" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46'>
+          <input id="price" name="price" type="text" value="<?php echo $row['PRICE'];?>" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46'>
           <label for="price">Price</label>
         </div>
 
@@ -196,14 +241,14 @@
 
       <div class="row">
         <div class="input-field col s12">
-          <input id="desc" name="desc" type="text" class="validate" value="<?php echo $row['DESCRIPTION'];?>">
+          <input id="desc" name="desc" type="text" value="<?php echo $row['DESCRIPTION'];?>" length="140">
           <label for="desc">Description</label>
         </div>
       </div>
 
       <div class="row">
         <div class="input-field col s12">
-          <input id="location" name="location" type="text" class="validate" value="<?php echo $row['LOCATION'];?>">
+          <input id="location" name="location" type="text" value="<?php echo $row['LOCATION'];?>" length="50">
           <label for="location">Location</label>
         </div>
       </div>
@@ -225,9 +270,10 @@
         <input type="file" name="image">
       </div>
       <div class="file-path-wrapper">
-        <input class="file-path validate" type="text">
+        <input class="file-path" type="text">
       </div>
     </div>
+<div class="col s9 m9">&nbsp</div>
 <button type="submit" name="submit" class=" modal-action modal-close waves-effect waves-green btn-flat">Update Post</button>
 
 </div>

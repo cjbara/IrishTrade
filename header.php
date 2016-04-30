@@ -12,28 +12,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <!-- Form Validation -->
-  <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.js"></script>
-
   <script>
     $(document).ready(function() {
       $('.modal-trigger').leanModal();
       $('select').material_select();
       $('.progress').hide();
-<?php
-   if(isset($_GET['login'])){
-?>
-     $('#login-modal').openModal();
-     $('#loginError').attr('data-error', 'Login Error');
-     $('#login-modal #email').addClass('invalid');
-     $('#login-modal #password').addClass('invalid');
-<?php
-   }
-?>
+
+      //Insert the validate php script
+      <?php include 'validate.php'; ?>
+
     });
     $('#upload').click(function() {
       $('.progress').show();
     });
+
 
   </script>
 </head>
@@ -89,10 +81,10 @@
   <div id="search-modal" class="modal">
     <div class="modal-content">
       <h4>Search Posts</h4>
-      <form class="col s12" action="index.php" method="get">
+      <form class="col s12" action="index.php" method="get" id="search-form">
       <div class="row">
         <div class="input-field col s12">
-          <input id="query" name="query" type="text" class="validate">
+          <input id="query" name="query" type="text">
           <label for="query">Keywords</label>
         </div>
       </div>
@@ -128,17 +120,18 @@
   <div id="new-post-modal" class="modal">
     <div class="modal-content">
       <h4>Create New Post</h4>
-      <form class="col s12" action="new_post.php" method="post" enctype="multipart/form-data">
+      <div id="new-post-error"><span id="new-post-error-text" class="white-text"></span></div>
+      <form class="col s12" id="new-post-form" action="new_post.php" method="post" enctype="multipart/form-data">
       <div class="row">
         <div class="input-field col s12">
-          <input id="title" name="title" type="text" class="validate">
+          <input id="title" name="title" type="text" length="30">
           <label for="title">Post Title</label>
         </div>
       </div>
 
   <div class="row">
     <div class="input-field col s12">
-     <select name="category">
+     <select name="category" id="category">
       <option value="" disabled selected>Select a Category</option>
 <?php
          $conn = oci_connect("guest", "guest", "xe");
@@ -156,7 +149,7 @@
 
   <div class="row">
         <div class="input-field col s6">
-          <input id="price" name="price" type="text" class="validate" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46'>
+          <input id="price" name="price" type="text" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46'>
           <label for="price">Price</label>
         </div>
 
@@ -171,14 +164,14 @@
 
       <div class="row">
         <div class="input-field col s12">
-          <input id="desc" name="desc" type="text" class="validate">
+          <input id="desc" name="desc" type="text" length="140">
           <label for="desc">Description</label>
         </div>
       </div>
 
       <div class="row">
         <div class="input-field col s12">
-          <input id="location" name="location" type="text" class="validate">
+          <input id="location" name="location" type="text" length="50">
           <label for="location">Location</label>
         </div>
       </div>
@@ -193,16 +186,13 @@
         <input type="file" name="image">
       </div>
       <div class="file-path-wrapper">
-        <input class="file-path validate" type="text">
+        <input class="file-path" type="text">
       </div>
     </div>
 
 
 
     <div class="modal-footer">
-    <div class="progress">
-         <div class="indeterminate"></div>
-      </div>
       <button type="submit" name="submit" class=" modal-action modal-close waves-effect waves-green btn-flat">Submit</button>
     </div>
     </form>
@@ -215,11 +205,12 @@
   <div id="login-modal" class="modal">
     <div class="modal-content">
       <h4>Login</h4>
+      <div id="login-error"><span id="login-error-text" class="white-text"></span></div>
       <form class="col s12" action="login.php" method="post">
       <div class="row">
         <div class="input-field col s12">
         <i class ="material-icons prefix">person</i>
-          <input id="email" name="username" type="email" >
+          <input id="email" name="username" type="text" >
           <label for="email">Email</label>
         </div>
       </div>
@@ -227,7 +218,7 @@
         <div class="input-field col s12">
         <i class ="material-icons prefix">vpn_key</i>
           <input id="password" name="password" type="password">
-          <label for="password" id="loginError">Password</label>
+          <label for="password">Password</label>
         </div>
       </div>
     <div class="modal-footer">
@@ -242,40 +233,41 @@
   <div id="sign-up-modal" class="modal modal-fixed-footer">
     <div class="modal-content">
       <h4>Sign Up</h4>
+      <div id="sign-up-error"><span id="sign-up-error-text" class="white-text"></span></div>
       <form class="col s12" action="new_user.php" method="post">
       <div class="row">
         <div class="input-field col s6">
         <i class ="material-icons prefix">person</i>
-          <input id="fname" name="fname" type="text" class="validate">
+          <input id="fname" name="fname" type="text" length="20">
           <label for="fname">First Name</label>
         </div>
         <div class="input-field col s6">
-          <input id="lname" name="lname" type="text" class="validate">
+          <input id="lname" name="lname" type="text" length="30">
           <label for="lname">Last Name</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12">
         <i class ="material-icons prefix">mail</i>
-          <input id="email" name="email" type="email" class="validate">
+          <input id="email" name="email" type="email" length="30">
           <label for="email">Email</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12">
         <i class="material-icons prefix">phone</i>
-          <input id="phone" name="phone" type="text" class="validate">
+          <input id="phone" name="phone" type="text" placeholder="XXX-XXX-XXXX" length="12">
           <label for="phone">Phone Number</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s6">
         <i class ="material-icons prefix">vpn_key</i>
-          <input id="password" name="pw" type="password" class="validate">
+          <input id="password" name="pw" type="password" length="30">
           <label for="password">Password</label>
         </div>
         <div class="input-field col s6">
-          <input id="password" name="password" type="password" class="validate">
+          <input id="password" name="pw2" type="password" length="30">
           <label for="password">Re-enter Password</label>
         </div>
       </div>

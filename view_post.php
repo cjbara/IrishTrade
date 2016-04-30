@@ -11,6 +11,9 @@
       $errorCount++;
     } else {
        $comment = $_POST["comment"];
+       if(strlen($comment) > 140){
+          $errorCount = 1;
+       }
     }
 
     if (empty($_POST["anon"])) {
@@ -28,6 +31,14 @@
       oci_bind_by_name($stmt, ":text", $comment);
       oci_bind_by_name($stmt, ":anon", $anon);
       oci_execute($stmt);
+    } else {
+     echo "<script>";
+     echo "$(document).ready(function() {";
+     echo "$('#comment-error').addClass('card-panel red');";
+     echo "$('#comment-error-text').text('Could not post comment.');";
+     echo "$('#comment-error-text').append(' Your comment was too long');";
+     echo "});</script>";
+
     }
   }
 
@@ -44,6 +55,9 @@
 ?>
   <!-- Main structure -->
   <div class="container">
+    <?php if(isset($_GET['image'])){ echo
+    '<div id="new-post-error" class="card-panel red"><span id="new-post-error-text" class="white-text">Could not upload image. Click edit post to try again.</span></div>';
+    } ?>
     <div class="row">
       <div class="col s6 m6">
 <?php
@@ -53,8 +67,17 @@
         print " - SOLD";
     }
     print "</b></h4></div>";
-    print "<div class=\"col s6 m6\"><h5>Seller: ".$row['NAME'];
-    print "</h5></div>";
+    print "<div class=\"col s6 m6\">";
+    if( !empty($_SESSION['valid']) ) {
+       if( $_SESSION['user_id'] == $row['USER_ID'] ) {
+          print '<a href="edit_post.php?post_id='.$row['POST_ID'].'" class="waves-effect waves-green btn">Edit Post</a>';
+       } else {
+          print "<h5>Seller: ".$row['NAME']."</h5>";
+       }
+    } else {
+      print "<h5>Seller: ".$row['NAME']."</h5>";
+    }
+    print "</div>";
 ?>
     </div><div class="row">
       <div class="col s5 m5">
@@ -94,7 +117,7 @@
       <div class="row">
         <div class="input-field col s12">
           <i class="material-icons prefix">mode_edit</i>
-          <textarea id="message" name="message" class="materialize-textarea"></textarea>
+          <textarea id="message" name="message" class="materialize-textarea" length="140"></textarea>
           <label for="message">Message</label>
         </div>
       </div>
@@ -133,11 +156,12 @@
   if( !empty($_SESSION['valid']) ) {
       print '<form class="col s12" method = "POST" action = "'.htmlspecialchars($_SERVER['PHP_SELF']).'?post_id='.$_GET['post_id'].'">';
 ?>
+      <div id="comment-error"><span id="comment-error-text" class="white-text"></span></div>
       <input type="hidden" name="post_id" value='.$_GET['post_id'].'>
       <div class="row">
-        <div class="input-field col s6">
+        <div class="input-field col s8">
         <i class ="material-icons prefix">comment</i>
-          <input id="comment" name="comment" type="text" class="validate">
+          <input id="comment" name="comment" type="text" length="140">
           <label for="comment">New Comment</label>
         </div>
         <div class="input-field col s2">

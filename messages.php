@@ -9,6 +9,9 @@ $conn = oci_connect("guest", "guest", "xe");
       $errorCount++;
     } else {
        $message = $_POST["message"];
+       if(strlen($message) > 140){
+         $errorCount = 1;
+       }
     }
 
     if( $errorCount == 0 ){
@@ -19,6 +22,13 @@ $conn = oci_connect("guest", "guest", "xe");
       oci_bind_by_name($stmt, ":id", $id);
       oci_bind_by_name($stmt, ":message", $message);
       oci_execute($stmt);
+    } else {
+     echo "<script>";
+     echo "$(document).ready(function() {";
+     echo "$('#message-error').addClass('card-panel red');";
+     echo "$('#message-error-text').text('Could not send message.');";
+     echo "$('#message-error-text').append(' Your message was too long.');";
+     echo "});</script>";
     }
   }
   $user_curs = oci_new_cursor($conn);
@@ -44,6 +54,7 @@ $conn = oci_connect("guest", "guest", "xe");
   <div class="row">
     <h4>Message Conversation with <?php print $other_user_name;?></h4>
   </div>
+  <div id="message-error"><span id="message-error-text" class="white-text"></span></div>
   <div class="row">
 
  <ul class="collection col s12">
@@ -83,7 +94,7 @@ $conn = oci_connect("guest", "guest", "xe");
       <div class="row">
         <div class="input-field col s12">
         <i class ="material-icons prefix">message</i>
-          <input id="m" name="message" type="text" class="validate">
+          <input id="m" name="message" type="text" length="140">
           <label for="m">New Message</label>
         </div>
       <div class = "col s1">&nbsp
