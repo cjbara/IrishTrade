@@ -3,7 +3,7 @@
 $conn = oci_connect("guest", "guest", "xe");
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $errorCount = 0;
-    $id = $_GET['id'];
+    $to = $_GET['id'];
     $from = $_SESSION['user_id'];
     if (empty($_POST["message"])) {
       $errorCount++;
@@ -13,14 +13,12 @@ $conn = oci_connect("guest", "guest", "xe");
          $errorCount = 1;
        }
     }
-
     if( $errorCount == 0 ){
-      $query = "begin message_pack.send_message(:id, :from, :id, :message); end;";
-      $stmt = oci_parse($conn, $query);
-      oci_bind_by_name($stmt, ":id", $message_id);
+      $stmt = oci_parse($conn, "begin message_pack.send_message(:message_id, :from, :to, :text); end;");
+      oci_bind_by_name($stmt, ":message_id", $message_id);
       oci_bind_by_name($stmt, ":from", $from);
-      oci_bind_by_name($stmt, ":id", $id);
-      oci_bind_by_name($stmt, ":message", $message);
+      oci_bind_by_name($stmt, ":to", $to);
+      oci_bind_by_name($stmt, ":text", $message);
       oci_execute($stmt);
     } else {
      echo "<script>";
@@ -88,9 +86,9 @@ $conn = oci_connect("guest", "guest", "xe");
   oci_close($conn);
 
   if( !empty($_SESSION['valid']) ) {
-      print '<form method = "POST" action = "'.htmlspecialchars($_SERVER['PHP_SELF']).'?id='.$_GET['id'].'">';
+      print '<form method = "POST" action = "'.htmlspecialchars($_SERVER['PHP_SELF'])."?id=".$_GET['id'].'">';
 ?>
-      <input type="hidden" name="post_id" value='.$_GET['id'].'>
+      <input type="hidden" name="id" value="<?php print $_GET['id'];?>">
       <div class="row">
         <div class="input-field col s12">
         <i class ="material-icons prefix">message</i>
