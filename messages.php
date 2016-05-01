@@ -25,7 +25,7 @@ $conn = oci_connect("guest", "guest", "xe");
      echo "$(document).ready(function() {";
      echo "$('#message-error').addClass('card-panel red');";
      echo "$('#message-error-text').text('Could not send message.');";
-     echo "$('#message-error-text').append(' Your message was too long.');";
+     echo "$('#message-error-text').append(' Your message was too long or empty.');";
      echo "});</script>";
     }
   }
@@ -74,12 +74,9 @@ $conn = oci_connect("guest", "guest", "xe");
         
       </p>
     </li>
-
-
-
-
 <?php
   }
+  echo '</ul></div>';
 
   oci_free_statement($stid);
   oci_free_statement($curs);

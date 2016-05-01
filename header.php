@@ -30,6 +30,7 @@
   </script>
 </head>
 <body>
+<div class="navbar-fixed">
  <nav class="blue darken-4">
     <div class="container">
     <div class="nav-wrapper">
@@ -59,6 +60,7 @@
     </div>
     </div>
   </nav>
+</div>
 
 
   <!--Dropdown Structure-->
