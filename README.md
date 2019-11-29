@@ -1,2 +1,2 @@
 # IrishTrade
-ND Students can buy and sell stuff
+ND Students can buy and sell goods and services.
